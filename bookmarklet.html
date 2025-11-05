@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href='favicon.ico' rel='icon' type='image/x-icon' />
+    <title>NSE Intraday OI Screener</title>
+    <style>
+        body {
+            background-color: #111827;
+        }
+
+        .box {
+            padding: 28px;
+            background-color: rgb(31 41 55);
+            text-align: center;
+            width: 450px;
+            height: 200px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 14px;
+        }
+
+        .box h1 {
+            font-family: Tahoma;
+            color: #fff;
+            font-size: 28px;
+        }
+
+        .box a {
+            padding: 15px 30px;
+            color: #fff;
+            font-family: Tahoma;
+            font-size: 22px;
+            text-decoration: none;
+            background-color: #008001;
+            border-radius: 10px;
+            margin-top: 30px;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <h1>Drag the button below to your Bookmarks Bar</h1>
+        <a href="javascript:((function () { if (window.location.hostname.indexOf(&quot;www.nseindia.com&quot;) === -1) { alert(&quot;This script should be run on https://www.nseindia.com&quot;); return; } var oiData; var priceDataMap = {}; function doInit() { clearInterval(window[&quot;__oiServerRequestDebounceTimer&quot;]); window[&quot;__oiServerRequestDebounceTimer&quot;] = setTimeout(function () { var xhr1 = new XMLHttpRequest(); xhr1.withCredentials = true; xhr1.addEventListener(&quot;readystatechange&quot;, function () { if (this.readyState === 4) { oiData = JSON.parse(this.responseText); } }); xhr1.open(&quot;GET&quot;, &quot;https://www.nseindia.com/api/live-analysis-oi-spurts-underlyings&quot;); xhr1.setRequestHeader(&quot;accept&quot;, &quot;*/*&quot;); xhr1.send(); var xhr2 = new XMLHttpRequest(); xhr2.withCredentials = true; xhr2.addEventListener(&quot;readystatechange&quot;, function () { if (this.readyState === 4) { priceDataMap[&quot;advances&quot;] = JSON.parse(this.responseText); } }); xhr2.open(&quot;GET&quot;, &quot;https://www.nseindia.com/api/live-analysis-advance&quot;); xhr2.setRequestHeader(&quot;accept&quot;, &quot;*/*&quot;); xhr2.send(); var xhr3 = new XMLHttpRequest(); xhr3.withCredentials = true; xhr3.addEventListener(&quot;readystatechange&quot;, function () { if (this.readyState === 4) { priceDataMap[&quot;declines&quot;] = JSON.parse(this.responseText); } }); xhr3.open(&quot;GET&quot;, &quot;https://www.nseindia.com/api/live-analysis-decline&quot;); xhr3.setRequestHeader(&quot;accept&quot;, &quot;*/*&quot;); xhr3.send(); var xhr4 = new XMLHttpRequest(); xhr4.withCredentials = true; xhr4.addEventListener(&quot;readystatechange&quot;, function () { if (this.readyState === 4) { priceDataMap[&quot;unchanged&quot;] = JSON.parse(this.responseText); } }); xhr4.open(&quot;GET&quot;, &quot;https://www.nseindia.com/api/live-analysis-unchanged&quot;); xhr4.setRequestHeader(&quot;accept&quot;, &quot;*/*&quot;); xhr4.send(); var checkDataReady = function () { if (oiData &amp;&amp; priceDataMap[&quot;advances&quot;] &amp;&amp; priceDataMap[&quot;declines&quot;] &amp;&amp; priceDataMap[&quot;unchanged&quot;]) { processData(); } else { setTimeout(checkDataReady, 100); } }; checkDataReady(); function processData() { var oiChangeMap = {}; JSON.stringify(oiData, function (k, v) { if (v &amp;&amp; (typeof v) === &quot;object&quot; &amp;&amp; v[&quot;symbol&quot;] &amp;&amp; v[&quot;latestOI&quot;]) { oiChangeMap[v[&quot;symbol&quot;]] = v; } return v; }); var priceChangeMap = {}; JSON.stringify(priceDataMap, function (k, v) { if (v &amp;&amp; (typeof v) === &quot;object&quot; &amp;&amp; v[&quot;symbol&quot;] &amp;&amp; v[&quot;series&quot;] === &quot;EQ&quot;) { priceChangeMap[v[&quot;symbol&quot;]] = v; } return v; }); var finalData = []; (oiData[&quot;data&quot;] || []).forEach((rec) =&gt; { if (priceChangeMap[rec[&quot;symbol&quot;]]) { finalData.push({ &quot;symbol&quot;: rec[&quot;symbol&quot;], &quot;currentPrice&quot;: priceChangeMap[rec[&quot;symbol&quot;]][&quot;lastPrice&quot;], &quot;priceChange&quot;: priceChangeMap[rec[&quot;symbol&quot;]][&quot;pchange&quot;], &quot;openInterest&quot;: oiChangeMap[rec[&quot;symbol&quot;]][&quot;latestOI&quot;], &quot;oiChange&quot;: oiChangeMap[rec[&quot;symbol&quot;]][&quot;avgInOI&quot;] }); } }); window[&quot;__oiScreenerWindow&quot;].postMessage({ &quot;msgType&quot;: &quot;INTRADAY_OI_DATA&quot;, data: finalData }, &quot;*&quot;); }; }, 1000); } function getUUID() { var str = &quot;abcdef0123456789&quot;; str += str + str; str += str + str; var randomStr = str.split(&quot;&quot;).sort(function () { return Math.random() - Math.random(); }).join(&quot;&quot;); var parts = [ randomStr.substring(0, 8), randomStr.substring(8, 12), randomStr.substring(12, 16), randomStr.substring(16, 20), randomStr.substring(20, 32) ]; return parts.join(&quot;-&quot;); } var w = 1400; var h = 840; var url = &quot;https://oi-screener.github.io/?requestID=&quot;; if (localStorage.getItem(&quot;__screener_mode&quot;) === &quot;dev&quot;) { url = &quot;http://localhost:3000/?requestID=&quot;; } window[&quot;__oiScreenerWindow&quot;] = window.open(url + getUUID(), &quot;__intraDayOIScreener&quot;, &quot;width=&quot; + w + &quot;,height=&quot; + h + &quot;,top=&quot; + (screen.height - h - 100) / 2 + &quot;,left=&quot; + (screen.width - w) / 2); if (!window[&quot;__oiScreenerServer_messageListener&quot;]) { window[&quot;__oiScreenerServer_messageListener&quot;] = function (e) { if (e.data === &quot;OI_CLIENT_RECEIVER_READY&quot;) { doInit(); } }; } window.removeEventListener(&quot;message&quot;, window[&quot;__oiScreenerServer_messageListener&quot;], false); window.addEventListener(&quot;message&quot;, window[&quot;__oiScreenerServer_messageListener&quot;], false); })());">NSE Intraday OI Screener</a>
+    </div>
+</body>
+
+</html>

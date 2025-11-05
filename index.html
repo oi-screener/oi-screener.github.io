@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href='favicon.ico' rel='icon' type='image/x-icon' />
+  <title>NSE Intraday OI Screener</title>
+  <script>((function () { var _cw = console.warn; console.warn = function () { if (arguments[0] && arguments[0].indexOf("cdn.tailwindcss.com should not be used in production") > -1) { return; } return _cw.apply(console, arguments); }; })());</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "rxjs": "https://aistudiocdn.com/rxjs@^7.8.2?conditions=es2015",
+        "rxjs/operators": "https://aistudiocdn.com/rxjs@^7.8.2/operators?conditions=es2015",
+        "rxjs/ajax": "https://aistudiocdn.com/rxjs@^7.8.2/ajax?conditions=es2015",
+        "rxjs/webSocket": "https://aistudiocdn.com/rxjs@^7.8.2/webSocket?conditions=es2015",
+        "rxjs/testing": "https://aistudiocdn.com/rxjs@^7.8.2/testing?conditions=es2015",
+        "rxjs/fetch": "https://aistudiocdn.com/rxjs@^7.8.2/fetch?conditions=es2015",
+        "@angular/compiler": "https://next.esm.sh/@angular/compiler@^20.3.7?external=rxjs",
+        "@angular/platform-browser": "https://next.esm.sh/@angular/platform-browser@^20.3.7?external=rxjs",
+        "@angular/core": "https://next.esm.sh/@angular/core@^20.3.7?external=rxjs",
+        "@angular/common": "https://next.esm.sh/@angular/common@^20.3.7?external=rxjs",
+        "@angular/core/rxjs-interop": "https://next.esm.sh/@angular/core@^20.3.7/rxjs-interop?external=rxjs"
+      }
+    }
+  </script>
+  <script type="text/javascript">
+    window["__oiScreenerClient_messageListener"] = function (e) {
+      if (e && e.data && e.data["msgType"] === "INTRADAY_OI_DATA") {
+        window["__receivedOIData"] = e.data.data;
+      }
+    };
+    window.removeEventListener("message", window["__oiScreenerClient_messageListener"], false);
+    window.addEventListener("message", window["__oiScreenerClient_messageListener"], false);
+    setTimeout(function () {
+      window.opener && window.opener.postMessage("OI_CLIENT_RECEIVER_READY", "*");
+      setTimeout(function () {
+        window.focus();
+      }, 500);
+    }, 500);
+    window.addEventListener("contextmenu", function (e) {
+      e.preventDefault();
+    }, false);
+  </script>
+  <style>
+    .mask,
+    .dialog {
+      visibility: hidden;
+    }
+
+    .mask {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-color: #000;
+      opacity: 0.4;
+    }
+
+    .dialog {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 500px;
+      max-width: calc(100% - 45px);
+      height: auto;
+      background-color: #fff;
+      box-shadow: 0 0 11px #000;
+      border-radius: 22px;
+      padding: 15px 30px;
+      color: #000;
+      font-family: Tahoma;
+    }
+
+    .dialog .btn {
+      padding: 15px 30px;
+      color: #fff;
+      font-family: Tahoma;
+      font-size: 18px;
+      text-decoration: none;
+      background-color: #008001;
+      border-radius: 10px;
+      margin-top: 30px;
+      display: block;
+      cursor: pointer;
+      width: 150px;
+      text-align: center;
+      position: relative;
+      left: calc(100% - 135px);
+    }
+
+    .mask.visible,
+    .dialog.visible {
+      visibility: visible;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4">
+  <app-root></app-root>
+  <div id="__uimask" class="mask"></div>
+  <div id="__uidialog" class="dialog">
+    <span class="text"></span>
+    <span class="btn js-okBtn">OK</span>
+  </div>
+  <script>
+    function showErrorDialog(show) {
+      var mask = document.getElementById("_uimask");
+      var dialog = document.getElementById("__uidialog");
+      if (show) {
+        mask && mask.classList.add("visible");
+        dialog && dialog.classList.add("visible");
+      } else {
+        mask && mask.classList.remove("visible");
+        dialog && dialog.classList.remove("visible");
+      }
+    }
+    function getUUID() {
+      var str = "abcdef0123456789";
+      str += str + str;
+      str += str + str;
+      var randomStr = str.split("").sort(function () { return Math.random() - Math.random(); }).join("");
+      var parts = [
+        randomStr.substring(0, 8),
+        randomStr.substring(8, 12),
+        randomStr.substring(12, 16),
+        randomStr.substring(16, 20),
+        randomStr.substring(20, 32)
+      ];
+      return parts.join("-");
+    }
+    document.querySelector("#__uidialog .text").innerHTML = "TIMEOUT_ERROR:<br />Unable to fetch data. Please visit the NSE India Website (https://www.nseindia.com) and run the script again.";
+    document.querySelector(".js-okBtn").addEventListener("click", function (e) {
+      window.open("https://www.nseindia.com", "_blank");
+      window.close();
+    }, false);
+  </script>
+</body>
+
+</html>
